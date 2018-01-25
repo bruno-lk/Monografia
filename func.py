@@ -53,6 +53,8 @@ def load_sound_files(file_paths):
 def plot_imagens(data, title=''):
     plt.figure()
     plt.title(title)
+    plt.xlabel('')  # TODO
+    plt.ylabel('')
     plt.grid()
     plt.plot(data)
     # name = i[1]+'.png'

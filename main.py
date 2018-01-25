@@ -3,6 +3,7 @@ import func
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
+# from pyAudioAnalysis import audioFeatureExtraction as aF
 # import heartbeat as hb
 # import pandas as pd
 # from scipy.io import wavfile
@@ -41,9 +42,9 @@ def main():
 
     print "Rotulo:", label[1]
     print "Nome Arquivo:", files[0]
-    print "Dados:", instance[0], type(instance[0])
-    print "Frequencia: ", rates[0]
-    print wavelet
+    # print "Dados:", instance[0], type(instance[0])
+    print "Frequencia (fs): ", rates[0]
+    print "\n", wavelet
 
 
     # filtragem e decomposicao
@@ -79,15 +80,24 @@ def main():
     if np.array_equal(recSignal, instance[0]):
         print('! sinais iguais !')
 
-    f, Pwelch_spec = signal.welch(recSignal, fs, scaling='spectrum')
-    plt.semilogy(f, Pwelch_spec)
-    plt.xlabel('frequency [Hz]')
-    plt.ylabel('PSD')
-    plt.grid()
-    plt.show()
+    # # Spectrogram
+    # f, Pwelch_spec = signal.welch(recSignal, fs, scaling='spectrum')
+    # plt.semilogy(f, Pwelch_spec)
+    # plt.xlabel('frequency [Hz]')
+    # plt.ylabel('PSD')
+    # plt.grid()
+    # plt.show()
+    #
+    # f = pywt.threshold(f, 195, mode='less')
+    # plt.semilogy(f, Pwelch_spec)
+    # plt.show()
+    #
+    # spectro = aF.stSpectogram(recSignal, rates[0], 0.05*rates[0], 0.025*rates[0], PLOT=True)
+    # print spectro
 
     # Segmentacao
-    # TODO
+
+    # TODO segmentacao
 
 
     # Plotagem dos sinais
