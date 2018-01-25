@@ -1,0 +1,8 @@
+
+pyAudioAnalysis/
+
+dataset/
+
+__pycache__/
+
+*.pyc
