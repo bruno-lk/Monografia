@@ -50,11 +50,11 @@ def load_sound_files(file_paths):
 
 
 # plotagem dos sinais
-def plot_imagens(data, title=''):
+def plot_imagens(data, title='', x='Tempo', y='Frequencia (Hz)'):
     plt.figure()
     plt.title(title)
-    plt.xlabel('')  # TODO
-    plt.ylabel('')
+    plt.xlabel(x)
+    plt.ylabel(y)
     plt.grid()
     plt.plot(data)
     # name = i[1]+'.png'

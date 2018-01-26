@@ -18,7 +18,7 @@ fs = 4000.0
 hrw = 0.05
 lowcut = 195.0
 highcut = 882.0
-th = 288.0
+th = 195.0
 
 def main():
     # files = []
@@ -80,6 +80,21 @@ def main():
     if np.array_equal(recSignal, instance[0]):
         print('! sinais iguais !')
 
+    smooth = signal.savgol_filter(recSignal, 5, 2)
+    # print smooth
+
+    # z = np.polyfit(smooth, , 3)
+    # print z
+
+    std = np.std(smooth)
+    print "std", std
+    helper = []
+    for i, x in enumerate(smooth):
+        if x > std:
+            helper.append(i)
+
+    print helper
+
     # # Spectrogram
     # f, Pwelch_spec = signal.welch(recSignal, fs, scaling='spectrum')
     # plt.semilogy(f, Pwelch_spec)
@@ -108,6 +123,9 @@ def main():
 
     func.plot_imagens(recSignal, 'sinal reconstruido')
     # func.plot_imagens(recSignal2, 'sinal reconstruido - upcoef')
+
+    func.plot_imagens(smooth, 'suavizacao triangular')
+    # func.plot_imagens(z,'polyfit')
 
     plt.show()
 
