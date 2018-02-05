@@ -21,16 +21,16 @@ highcut = 882.0
 th = 195.0
 
 def main():
-    # files = []
+    files = []
     # instance = []
     labels = []
     file_paths = []
 
-    files = func.get_filenames(baseb, '.wav')
+    files = func.get_filenames(mumur, '.wav')
 
     # carrega arquivos de audio
     for s in files:
-        file_paths.append(baseb + '/' + s)
+        file_paths.append(mumur + '/' + s)
     instance, rates = func.load_sound_files(file_paths)
 
     # ecg = pywt.data.ecg() # dataset do pywavelets
