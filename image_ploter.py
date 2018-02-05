@@ -9,7 +9,7 @@ def get_filenames(path, filetype=None):
     files = []
     if path[-1] != '/':
         path += '/'
-    os.chdir(path)  # muda p/ pasta da base atual
+    os.chdir(path)  # muda p/ pasta da base atual # os.getcwd() para checar diretorio atual
     if filetype is None:
         for file in glob.glob('*'):
             files.append(file)
@@ -30,13 +30,13 @@ def write_csv(filename, list, raw=True):
 
 
 # Read .wav files
-def load_sound_files(file_paths):
+def load_sound_files(f):
     raw_sounds = []
     rates = []
-    for f in file_paths:
-        rate, data = wavfile.read(f)
-        raw_sounds.append(data)
-        rates.append(rate)
+    # for f in file_paths:
+    rate, data = wavfile.read(f)
+    raw_sounds.append(data)
+    rates.append(rate)
     return raw_sounds, rates
 
 
@@ -49,7 +49,8 @@ def plot_imagens(data, title=''):
     plt.grid()
     plt.plot(data)
     # name = i[1]+'.png'
-    plt.savefig(title, dpi=100)
+    plt.savefig(title + '.png', dpi=100)
+    plt.clf()
 
 # dataset PASCAL B
 btraning_normal = '/home/bruno/Documentos/UFMA/mono/dataset/B/Training B Normal'
@@ -66,7 +67,10 @@ training_d = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/traini
 training_e = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/training-e'
 training_f = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/training-a'
 validation = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/validation'
-bases_Physio = [training_a, training_b, training_c, training_d, training_e, training_f]  # , validation]
+# bases_Physio = [, , ]  # , validation]
+bases_Physioab = [training_a, training_b]
+bases_Physiocd = [training_c, training_d]
+bases_Physioef = [training_e, training_f]
 path_Physio = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/'
 
 label = ['Training B Normal', 'Btraining_murmur']
@@ -75,22 +79,27 @@ files = []
 labels = []
 file_paths = []
 
-for base in bases_B:
+for base in bases_Physiocd:
     instances = []
     files.append(get_filenames(path=base, filetype='.wav'))
-    labels.append(get_filenames(path=base, filetype='.hea'))
+    # labels.append(get_filenames(path=base, filetype='.hea'))
+
+    # a maneira mais correta de fazer seria dividir em dois loops
+    # assim o entendimento poderia ficar mais facil (?)
     for i in range(len(files[-1])):
-        print base + '/' + files[-1][i]
-        instance, rates = load_sound_files(base + '/' + files[-1][i])
+        instance, rate = load_sound_files(base + '/' + files[-1][i])
+        plot_imagens(instance[0], files[-1][i])
+        print (files[-1][i] + ' done!')
+    print('Done with: ' + base + '\n')
 
-files = get_filenames(btraning_mumur, '.wav')
-
-# carrega arquivos de audio
-for s in files:
-    file_paths.append(btraning_mumur + '/' + s)
-instance, rates = load_sound_files(file_paths)
-
-print "Rotulo:", label[1]
-print "Nome Arquivo:", files[0]
-print "Dados:", instance[0], type(instance[0])
-print "Frequencia (fs): ", rates[0]
+# files = get_filenames(btraning_mumur, '.wav')
+#
+# # carrega arquivos de audio
+# for s in files:
+#     file_paths.append(btraning_mumur + '/' + s)
+# instance, rates = load_sound_files(file_paths)
+#
+# print "Rotulo:", label[1]
+# print "Nome Arquivo:", files[0]
+# print "Dados:", instance[0], type(instance[0])
+# print "Frequencia (fs): ", rates[0]

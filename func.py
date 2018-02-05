@@ -17,7 +17,7 @@ def get_filenames(path, filetype=None):
     files = []
     if path[-1] != '/':
         path += '/'
-    os.chdir(path)  # muda p/ pasta da base atual
+    os.chdir(path)  # muda p/ pasta da base atual # os.getcwd() para checar diretorio atual
     if filetype is None:
         for file in glob.glob('*'):
             files.append(file)
