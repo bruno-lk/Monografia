@@ -73,13 +73,17 @@ bases_Physiocd = [training_c, training_d]
 bases_Physioef = [training_e, training_f]
 path_Physio = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/'
 
+# dataset Michigan_Heart_Sounds
+michigan = '/home/bruno/Documentos/UFMA/mono/dataset/Michigan_Heart_Sounds'
+base_michigan = [michigan]
+
 label = ['Training B Normal', 'Btraining_murmur']
 
 files = []
 labels = []
 file_paths = []
 
-for base in bases_Physiocd:
+for base in bases_B:
     instances = []
     files.append(get_filenames(path=base, filetype='.wav'))
     # labels.append(get_filenames(path=base, filetype='.hea'))
