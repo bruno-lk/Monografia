@@ -40,11 +40,11 @@ def main():
     (phi, psi, x) = wavelet.wavefun()
     # wavelet = signal.daub(6)
 
+    # identification
     print "Rotulo:", label[1]
     print "Nome Arquivo:", files[0]
-    # print "Dados:", instance[0], type(instance[0])
     print "Frequencia (fs): ", rates[0]
-    print "\n", wavelet
+    # print "\n", wavelet
 
 
     # filtragem e decomposicao
@@ -52,10 +52,6 @@ def main():
     # y = func.butter_lowpass_filter(decimateSignal, lowcut, fs, order=6)  # passa baixa
     coeffs = pywt.wavedec(decimateSignal, 'db6', level=4)  # transformada wavelet
     cA4, cD4, cD3, cD2, cD1 = coeffs
-    # print "cD4:", cD4
-    # print "cD3:", cD3
-    # print "cD2:", cD2
-    # print "cD1:", cD1
 
     cD4 = pywt.threshold(cD4, th, mode='less')
     cD3 = pywt.threshold(cD3, th, mode='less')
@@ -74,28 +70,28 @@ def main():
 
 
     # reconstrucao do sinal
-    recSignal = pywt.waverec(coeffs, 'db6')  # recuperacao de sinal
+    recSignal = pywt.waverec(coeffs, 'db6')
 
     # verifica se sinais sao iguais
     if np.array_equal(recSignal, instance[0]):
         print('! sinais iguais !')
 
-    smooth = signal.savgol_filter(recSignal, 5, 2)
+    # smooth = signal.savgol_filter(recSignal, 5, 2)
     # print smooth
 
     # z = np.polyfit(smooth, , 3)
     # print z
 
-    std = np.std(smooth)
-    print "std", std
-    helper = []
-    for i, x in enumerate(smooth):
-        if x > std:
-            helper.append(i)
+    # std = np.std(smooth)
+    # print "std", std
+    # helper = []
+    # for i, x in enumerate(smooth):
+    #     if x > std:
+    #         helper.append(i)
+    #
+    # print helper
 
-    print helper
-
-    # # Spectrogram
+    # Spectrogram
     # f, Pwelch_spec = signal.welch(recSignal, fs, scaling='spectrum')
     # plt.semilogy(f, Pwelch_spec)
     # plt.xlabel('frequency [Hz]')
@@ -110,9 +106,7 @@ def main():
     # spectro = aF.stSpectogram(recSignal, rates[0], 0.05*rates[0], 0.025*rates[0], PLOT=True)
     # print spectro
 
-    # Segmentacao
-
-    # TODO segmentacao
+    func.write_csv(files[0], recSignal)
 
 
     # Plotagem dos sinais
@@ -124,7 +118,7 @@ def main():
     func.plot_imagens(recSignal, 'sinal reconstruido')
     # func.plot_imagens(recSignal2, 'sinal reconstruido - upcoef')
 
-    func.plot_imagens(smooth, 'suavizacao triangular')
+    # func.plot_imagens(smooth, 'suavizacao triangular')
     # func.plot_imagens(z,'polyfit')
 
     plt.show()

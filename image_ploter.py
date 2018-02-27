@@ -1,8 +1,9 @@
 import os
 import glob
 import csv
-from scipy.io import wavfile
 import matplotlib.pyplot as plt
+# import librosa, librosa.display
+from scipy.io import wavfile
 
 
 def get_filenames(path, filetype=None):
@@ -95,6 +96,13 @@ for base in bases_B:
         plot_imagens(instance[0], files[-1][i])
         print (files[-1][i] + ' done!')
     print('Done with: ' + base + '\n')
+
+# print (base + '/' + files[-1][0])
+
+# x, sr = librosa.load(base + '/' + files[-1][0])
+# librosa.display.waveplot(x, sr=sr)
+# plt.show()
+
 
 # files = get_filenames(btraning_mumur, '.wav')
 #
