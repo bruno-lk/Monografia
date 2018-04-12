@@ -1,15 +1,17 @@
 import glob
 import os
 import csv
-# import pywt
+import librosa
+import pywt
 # import pylab
 import matplotlib.pyplot as plt
 import numpy as np
 # import heartBeat as hb
 from scipy.io import wavfile
-from scipy.signal import butter, lfilter
-# from pyAudioAnalysis import audioBasicIO as aIO
-from pyAudioAnalysis import audioSegmentation as aS
+from scipy.signal import butter, lfilter, decimate
+from pyAudioAnalysis import audioBasicIO
+from pyAudioAnalysis import audioFeatureExtraction
+# from pyAudioAnalysis import audioSegmentation
 
 
 # Gets all file names from a directory (extension may or may not be specified)
@@ -28,13 +30,12 @@ def get_filenames(path, filetype=None):
     pass
 
 
-def write_csv(filename, list, raw=True):
+def write_csv(filename, lista):  # raw=True
     if filename[-4:] != '.csv':
         filename += '.csv'
     with open(filename, 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
-        for row in list:
-
+        for row in lista:
             writer.writerow(row)
 
 
@@ -59,6 +60,41 @@ def plot_imagens(data, title='', x='Tempo', y='Frequencia (Hz)'):
     plt.plot(data)
     # name = i[1]+'.png'
     # plt.savefig(name, dpi=100)
+
+
+def extract_feature(X, sample_rate):  # file_name):
+    # X, sample_rate = librosa.load(file_name)
+    stft = np.abs(librosa.stft(X))  # Short-time Fourier transform
+    mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T, axis=0)  # Mel-frequency cepstral coefficients
+    chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0)  # Compute a chromagram from a waveform or power spectrogram
+    mel = np.mean(librosa.feature.melspectrogram(X, sr=sample_rate).T, axis=0)  # Compute a mel-scaled spectrogram
+    contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T, axis=0)  # Compute spectral contrast [R3333]
+    tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X), sr=sample_rate).T, axis=0)  # Computes the tonal centroid features (tonnetz), following the method of [R3737]
+    return [mfccs, chroma, mel, contrast, tonnetz]
+
+
+def pyAudioAnalysis_features(x, Fs):
+    # [Fs, x] = audioBasicIO.readAudioFile(file_name)
+    stF = audioFeatureExtraction.stFeatureExtraction(x, Fs, 0.050 * Fs, 0.025 * Fs)
+    mtF = audioFeatureExtraction.mtFeatureExtraction(x, Fs, 0.050 * Fs, 0.025 * Fs)
+    return [stF, mtF]
+
+def wavelet_filtering(instance, th):
+    decimateSignal = decimate(instance, 10)
+    # transformada Wavelet Daubechies order 6
+    coeffs = pywt.wavedec(decimateSignal, 'db6', level=4)
+    cA4, cD4, cD3, cD2, cD1 = coeffs
+
+    cD4 = pywt.threshold(cD4, th, mode='less')
+    cD3 = pywt.threshold(cD3, th, mode='less')
+    cD2 = pywt.threshold(cD2, th, mode='less')
+    cD1 = pywt.threshold(cD1, th, mode='less')
+
+    coeffs = cA4, cD4, cD3, cD2, cD1
+
+    # reconstrucao do sinal
+    recSignal = pywt.waverec(coeffs, 'db6')
+    return recSignal
 
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
