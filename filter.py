@@ -1,6 +1,7 @@
 import func
 import librosa
 import os
+from pyAudioAnalysis import audioBasicIO
 # import glob
 # import csv
 # import pywt
@@ -27,7 +28,7 @@ training_b = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/traini
 training_c = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/training-c'
 training_d = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/training-d'
 training_e = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/training-e'
-training_f = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/training-a'
+training_f = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/training-f'
 validation = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/validation'
 # bases_Physio = [training_a, training_b, training_c, training_d, training_e, training_f]
 bases_Physioab = [training_a, training_b]
@@ -68,6 +69,10 @@ def main_b():
             # instance, rate = func.load_sound_files(base + '/' + files[-1][i])
             # rate, instance = wavfile.read(base + '/' + files[-1][i])
             instance, rate = librosa.load(base + '/' + files[-1][i])
+            # [rate, instance] = audioBasicIO.readAudioFile(base + '/' + files[-1][i])
+
+            # frames - librosa
+            frames = librosa.util.frame(instance, rate, rate)
 
             # filtragem e decomposicao
             rec_signal = func.wavelet_filtering(instance, th)
@@ -75,6 +80,7 @@ def main_b():
 
             # extracao de caracteriticas
             features = func.extract_feature(rec_signal, rate)
+            # features = func.pyAudioAnalysis_features(rec_signal, rate)
 
             # rotulacao
             if base == btraning_normal:
@@ -82,14 +88,16 @@ def main_b():
             else:
                 features.append("Anormal")
 
-            # features = func.pyAudioAnalysis_features(recSignal, rate)
-            features_list.append(features)
+            # features_list.append(features)
 
             print('Done with: ' + files[-1][i])
+            print 'frames: ', frames
+            print 'features: ', features
 
-        # func.write_csv(path_Physio+base[-1], features_list)
-        dir_db = os.path.basename(base)
-        func.write_csv('librosa_features_of_' + dir_db + '_filtered', features_list)
+        # # escritas no CVS
+        # # func.write_csv(path_Physio+base[-1], features_list)
+        # dir_db = os.path.basename(base)
+        # func.write_csv('pAA_st_features_of_' + dir_db, features_list)
         print('Done with: ' + base + '\n')
     print 'Done!'
 
@@ -161,6 +169,6 @@ def clear_files(filename):
     pass
 
 
-# main_b()
-main_pn()
+main_b()
+# main_pn()
 # clear_files(path_Physio + 'f')

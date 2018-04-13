@@ -75,9 +75,10 @@ def extract_feature(X, sample_rate):  # file_name):
 
 def pyAudioAnalysis_features(x, Fs):
     # [Fs, x] = audioBasicIO.readAudioFile(file_name)
-    stF = audioFeatureExtraction.stFeatureExtraction(x, Fs, 0.050 * Fs, 0.025 * Fs)
-    mtF = audioFeatureExtraction.mtFeatureExtraction(x, Fs, 0.050 * Fs, 0.025 * Fs)
-    return [stF, mtF]
+    # stF = audioFeatureExtraction.stFeatureExtraction(x, Fs, 0.05 * Fs, 0.05 * Fs)
+    mtF = audioFeatureExtraction.mtFeatureExtraction(x, Fs, 1 * Fs, 1 * Fs, 0.5 * Fs, 0.5 * Fs)
+    return mtF
+    # return [stF, mtF]
 
 def wavelet_filtering(instance, th):
     decimateSignal = decimate(instance, 10)
