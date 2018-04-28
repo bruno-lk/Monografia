@@ -3,7 +3,7 @@ import os
 import csv
 import librosa
 import pywt
-# import pylab
+import pylab
 import matplotlib.pyplot as plt
 import numpy as np
 # import heartBeat as hb
@@ -11,7 +11,7 @@ from scipy.io import wavfile
 from scipy.signal import butter, lfilter, decimate
 from pyAudioAnalysis import audioBasicIO
 from pyAudioAnalysis import audioFeatureExtraction
-# from pyAudioAnalysis import audioSegmentation
+from pyAudioAnalysis import audioSegmentation
 
 
 # Gets all file names from a directory (extension may or may not be specified)
@@ -64,13 +64,15 @@ def plot_imagens(data, title='', x='Tempo', y='Frequencia (Hz)'):
 
 def extract_feature(X, sample_rate):  # file_name):
     # X, sample_rate = librosa.load(file_name)
-    stft = np.abs(librosa.stft(X))  # Short-time Fourier transform
-    mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T, axis=0)  # Mel-frequency cepstral coefficients
-    chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0)  # Compute a chromagram from a waveform or power spectrogram
-    mel = np.mean(librosa.feature.melspectrogram(X, sr=sample_rate).T, axis=0)  # Compute a mel-scaled spectrogram
-    contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T, axis=0)  # Compute spectral contrast [R3333]
-    tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X), sr=sample_rate).T, axis=0)  # Computes the tonal centroid features (tonnetz), following the method of [R3737]
-    return [mfccs, chroma, mel, contrast, tonnetz]
+    stft = np.abs(librosa.stft(X))
+    mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T, axis=0)
+    chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0)
+    mel = np.mean(librosa.feature.melspectrogram(X, sr=sample_rate).T, axis=0)
+    contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T, axis=0)
+    tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X), sr=sample_rate).T, axis=0)
+    zcr = np.mean(librosa.feature.zero_crossing_rate(X).T, axis=0)
+
+    return [mfccs.tolist(), chroma.tolist(), mel.tolist(), contrast.tolist(), tonnetz.tolist(), zcr]
 
 
 def pyAudioAnalysis_features(x, Fs):
@@ -202,3 +204,7 @@ def butter_lowpass_filter(data, lowcut, fs, order=5):
     y = lfilter(b, a, data)
     return y
 
+
+def frame_functions(frames, rate, filename):
+    for f in frames:
+        features = extract_feature(f, rate)

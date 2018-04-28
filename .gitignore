@@ -8,3 +8,5 @@ __pycache__/
 *.pyc
 
 \.idea/
+
+librosa_features_of_Training B Normal\.csv
