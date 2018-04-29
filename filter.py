@@ -6,7 +6,7 @@ from pyAudioAnalysis import audioBasicIO
 # import csv
 # import pywt
 # import gc
-# import numpy as np
+import numpy as np
 import matplotlib.pyplot as plt
 # from scipy import signal
 from pyAudioAnalysis import audioFeatureExtraction
@@ -40,7 +40,7 @@ path_Physio = '/home/bruno/Documentos/UFMA/mono/dataset/PhysioNet/training/'
 michigan = '/home/bruno/Documentos/UFMA/mono/dataset/Michigan_Heart_Sounds'
 base_michigan = [michigan]
 
-files = []
+
 file_paths = []
 
 # fs = 4000.0
@@ -104,17 +104,50 @@ def gerador_de_caracteriticas():
     func.write_csv("BaseB_librosa_features", all_features)
 
 
-def gerador_de_audio(sinal):
-    # TODO: gerar arquivos audios dos sinais filtrados
-    pass
+def gerador_de_audio():
+    files = []
+
+    for base in bases_B:
+        instances_list = []
+        rate_list = []
+
+        files.append(func.get_filenames(path=base, filetype='.wav'))
+
+        for i in range(len(files[-1])):
+            instance, rate = librosa.load(base + '/' + files[-1][i])
+
+            # filtragem e decomposicao
+            rec_signal = func.wavelet_filtering(instance, th)
+            instances_list.append(rec_signal)
+            rate_list.append(rate)
+            print('Done with: ' + files[-1][i])
+
+        print('Done with: ' + base + '\n')
+
+
+        # mudanca p/ novo diretorio
+        new_path = base + "/filtered"
+        os.chdir(new_path)
+
+        for i in range(len(files[-1])):
+            # geracao de arquivo
+            maxv = np.iinfo(np.int16).max
+            librosa.output.write_wav(
+                files[-1][i] + "_filtered_int16.wav", (instances_list[i] * maxv).astype(np.int16), rate_list[i]
+            )
+            print('Done with audio: ' + files[-1][i])
+
+        print('Done with: ' + base + '\n')
 
 
 def main_b():
+    files = []
     all_features = []
 
     for base in bases_B:
         instances_list = []
         features_list = []
+        rate_list = []
         files.append(func.get_filenames(path=base, filetype='.wav'))  # gera array com nome dos audios
 
         for i in range(len(files[-1])):
@@ -123,15 +156,18 @@ def main_b():
             instance, rate = librosa.load(base + '/' + files[-1][i])
             # [rate, instance] = audioBasicIO.readAudioFile(base + '/' + files[-1][i])
 
-            # filtragem e decomposicao
-            rec_signal = func.wavelet_filtering(instance, th)
-            instances_list.append(rec_signal)
+            # rate_list.append(rate)
+
+            # # filtragem e decomposicao
+            # rec_signal = func.wavelet_filtering(instance, th)
+            # instances_list.append(rec_signal)
 
             # extracao de caracteriticas
-            features = func.extract_feature(rec_signal, rate)  # librosa
+            features = func.extract_feature(instance, rate)  # librosa
             # features = audioFeatureExtraction.stFeatureExtraction(instance, rate, 0.5 * rate, 0.25 * rate)
-            # features = audioFeatureExtraction.mtFeatureExtraction(instance, rate, 0.5 * rate, 0.5 * rate,
-            #                                                       0.25 * rate, 0.25 * rate)
+            # features = audioFeatureExtraction.mtFeatureExtraction(
+            #     instance, rate, 0.5 * rate, 0.5 * rate,0.25 * rate, 0.25 * rate
+            # )
 
             # rotulacao
             if base == btraning_normal:
@@ -145,9 +181,7 @@ def main_b():
             all_features.append(features)
             print('Done with: ' + files[-1][i])
 
-
         # escritas no CVS
-        # func.write_csv(path_Physio+base[-1], features_list)
         dir_db = os.path.basename(base)
         func.write_csv('librosa_features_of_' + dir_db, features_list)
         print('Done with: ' + base + '\n')
@@ -158,6 +192,7 @@ def main_b():
 
 
 def main_pn():
+    files = []
     labels = []
 
     for base in bases_Physioef:
@@ -195,7 +230,8 @@ def main_pn():
     print 'Done!'
 
 
-gerador_de_caracteriticas()
+# gerador_de_caracteriticas()
 # main_b()
 # main_pn()
 # test_pyAudioAnalysis()
+gerador_de_audio()

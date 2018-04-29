@@ -19,7 +19,7 @@ def get_filenames(path, filetype=None):
     files = []
     if path[-1] != '/':
         path += '/'
-    os.chdir(path)  # muda p/ pasta da base atual # os.getcwd() para checar diretorio atual
+    os.chdir(path)  # muda p/ pasta da base atual # usar os.getcwd() para checar diretorio atual
     if filetype is None:
         for file in glob.glob('*'):
             files.append(file)
@@ -84,8 +84,7 @@ def pyAudioAnalysis_features(x, Fs):
 
 def wavelet_filtering(instance, th):
     decimateSignal = decimate(instance, 10)
-    # transformada Wavelet Daubechies order 6
-    coeffs = pywt.wavedec(decimateSignal, 'db6', level=4)
+    coeffs = pywt.wavedec(decimateSignal, 'db6', level=4)  # transformada Wavelet Daubechies order 6
     cA4, cD4, cD3, cD2, cD1 = coeffs
 
     cD4 = pywt.threshold(cD4, th, mode='less')
@@ -205,6 +204,4 @@ def butter_lowpass_filter(data, lowcut, fs, order=5):
     return y
 
 
-def frame_functions(frames, rate, filename):
-    for f in frames:
-        features = extract_feature(f, rate)
+
