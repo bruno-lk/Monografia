@@ -1,8 +1,10 @@
 import os
 import glob
 import csv
+import func
 import matplotlib.pyplot as plt
-# import librosa, librosa.display
+import numpy as np
+import librosa, librosa.display
 from scipy.io import wavfile
 
 
@@ -49,7 +51,17 @@ def plot_imagens(data, title=''):
     plt.ylabel('Freqencia (Hz)')
     plt.grid()
     plt.plot(data)
-    # name = i[1]+'.png'
+    plt.savefig(title + '.png', dpi=100)
+    plt.clf()
+
+
+# plotagem dos spectogramas dos sinais
+def plot_spectogram(y, title):
+    D = librosa.amplitude_to_db(librosa.stft(y), ref=np.max)
+    # plt.subplot(4, 2, 1)
+    librosa.display.specshow(D, y_axis='linear')
+    plt.colorbar(format='%+2.0f dB')
+    plt.title('Linear-frequency power spectrogram - ' + title)
     plt.savefig(title + '.png', dpi=100)
     plt.clf()
 
@@ -92,8 +104,11 @@ for base in bases_B:
     # a maneira mais correta de fazer seria dividir em dois loops
     # assim o entendimento poderia ficar mais facil (?)
     for i in range(len(files[-1])):
-        instance, rate = load_sound_files(base + '/' + files[-1][i])
-        plot_imagens(instance[0], files[-1][i])
+        # instance, rate = load_sound_files(base + '/' + files[-1][i])
+        instance, rate = librosa.load(base + '/' + files[-1][i])
+        rec_signal = func.wavelet_filtering(instance, th=288)
+        plot_imagens(rec_signal, files[-1][i] + " filtered waveplot")
+        # plot_spectogram(rec_signal, files[-1][i] + ' filtered')
         print (files[-1][i] + ' done!')
     print('Done with: ' + base + '\n')
 

@@ -2,6 +2,7 @@ import glob
 import os
 import csv
 import librosa
+from librosa.display import specshow
 import pywt
 import pylab
 import matplotlib.pyplot as plt
@@ -51,15 +52,25 @@ def load_sound_files(file_paths):
 
 
 # plotagem dos sinais
-def plot_imagens(data, title='', x='Tempo', y='Frequencia (Hz)'):
+def plot_imagens(data, title, x='Tempo', y='Frequencia (Hz)'):
     plt.figure()
     plt.title(title)
     plt.xlabel(x)
     plt.ylabel(y)
     plt.grid()
     plt.plot(data)
-    # name = i[1]+'.png'
-    # plt.savefig(name, dpi=100)
+    name = title+'.png'
+    plt.savefig(name, dpi=100)
+
+
+def plot_spectogram(y, title):
+    D = librosa.amplitude_to_db(librosa.stft(y), ref=np.max)
+    # plt.subplot(4, 2, 1)
+    specshow(D, y_axis='linear')
+    plt.colorbar(format='%+2.0f dB')
+    plt.title('Linear-frequency power spectrogram - ' + title)
+    name = title + '.png'
+    plt.savefig(name, dpi=100)
 
 
 def extract_feature(X, sample_rate):  # file_name):
@@ -83,16 +94,15 @@ def pyAudioAnalysis_features(x, Fs):
     # return [stF, mtF]
 
 def wavelet_filtering(instance, th):
-    decimateSignal = decimate(instance, 10)
-    coeffs = pywt.wavedec(decimateSignal, 'db6', level=4)  # transformada Wavelet Daubechies order 6
-    cA4, cD4, cD3, cD2, cD1 = coeffs
+    decimateSignal = decimate(instance, 10)  # downsampling
+    cA4, cD4, cD3, cD2, cD1 = pywt.wavedec(decimateSignal, 'db6', level=4)  # transformada Wavelet Daubechies order 6
 
     cD4 = pywt.threshold(cD4, th, mode='less')
     cD3 = pywt.threshold(cD3, th, mode='less')
     cD2 = pywt.threshold(cD2, th, mode='less')
     cD1 = pywt.threshold(cD1, th, mode='less')
 
-    coeffs = cA4, cD4, cD3, cD2, cD1
+    coeffs = [cA4, cD4, cD3, cD2, cD1]
 
     # reconstrucao do sinal
     recSignal = pywt.waverec(coeffs, 'db6')
