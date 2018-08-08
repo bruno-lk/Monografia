@@ -167,7 +167,7 @@ def main_a():
             instances_list.append(instance)
 
             # filtragem e decomposicao
-            rec_signal = func.wavelet_filtering(instance, th)
+            rec_signal = func.wavelet_filtering(instance, th, rate)
             filtered_instances_list.append(rec_signal)
 
             # extracao de caracteriticas
@@ -197,7 +197,7 @@ def main_a():
         print('Done with: ' + base + '\n')
 
     os.chdir(path_A)
-    func.write_csv("BaseA_librosa_filtered_features_of_", all_features)
+    func.write_csv("BaseA_librosa_filtered_features", all_features)
     print 'Done!'
 
 
@@ -220,7 +220,7 @@ def main_b():
             instances_list.append(instance)
 
             # filtragem e decomposicao
-            rec_signal = func.wavelet_filtering(instance, th)
+            rec_signal = func.wavelet_filtering(instance, th, rate)
             filtered_instances_list.append(rec_signal)
 
             # extracao de caracteriticas
@@ -242,14 +242,14 @@ def main_b():
             all_features.append(features)
             print('Done with: ' + files[-1][i])
 
-    #     # escritas no CVS
-    #     dir_db = os.path.basename(base)
-    #     func.write_csv('librosa_filtered_features_of_' + dir_db, features_list)
-    #     print('Done with: ' + base + '\n')
-    #
-    # # escritas no CVS geral
+        # escritas no CVS
+        # dir_db = os.path.basename(base)
+        # func.write_csv('librosa_filtered_features_of_' + dir_db, features_list)
+        print('Done with: ' + base + '\n')
+
+    # escritas no CVS geral
     # os.chdir(path_B)
-    # func.write_csv("BaseB_librosa_filtered_features_of_", all_features)
+    # func.write_csv("BaseB_librosa_filtered_features", all_features)
     print 'Done!'
 
 

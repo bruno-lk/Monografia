@@ -59,8 +59,9 @@ def plot_imagens(data, title, x='Tempo', y='Frequencia (Hz)'):
     plt.ylabel(y)
     plt.grid()
     plt.plot(data)
-    name = title+'.png'
-    plt.savefig(name, dpi=100)
+    # name = title+'.png'
+    # plt.savefig(name, dpi=100)
+    plt.show()
 
 
 def plot_spectogram(y, title):
@@ -83,6 +84,14 @@ def extract_feature(X, sample_rate):  # file_name):
     tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(X), sr=sample_rate).T, axis=0)
     zcr = np.mean(librosa.feature.zero_crossing_rate(X).T, axis=0)
 
+    # medir tamanho dos vetores
+    # print "mfcc:", len(mfccs)
+    # print "chroma:", len(chroma)
+    # print "mel:", len(mel)
+    # print "contrast:", len(contrast)
+    # print "tonnetz:", len(tonnetz)
+    # print "zcr:", len(zcr)
+
     return [mfccs.tolist(), chroma.tolist(), mel.tolist(), contrast.tolist(), tonnetz.tolist(), zcr]
 
 
@@ -93,20 +102,43 @@ def pyAudioAnalysis_features(x, Fs):
     return mtF
     # return [stF, mtF]
 
-def wavelet_filtering(instance, th):
+
+def wavelet_filtering(instance, th, fs):
     decimateSignal = decimate(instance, 10)  # downsampling
-    cA4, cD4, cD3, cD2, cD1 = pywt.wavedec(decimateSignal, 'db6', level=4)  # transformada Wavelet Daubechies order 6
+    # cA4, cD4, cD3, cD2, cD1 = pywt.wavedec(decimateSignal, 'db6', level=4)  # transformada Wavelet Daubechies order 6
+    coeffs = pywt.wavedec(decimateSignal, 'db6', level=4)  # transformada Wavelet Daubechies order 6
 
-    cD4 = pywt.threshold(cD4, th, mode='less')
-    cD3 = pywt.threshold(cD3, th, mode='less')
-    cD2 = pywt.threshold(cD2, th, mode='less')
-    cD1 = pywt.threshold(cD1, th, mode='less')
+    # for i, coeff in enumerate(coeffs[1:]):
+    #     coeff = pywt.threshold(coeff, th, mode='less')
 
-    coeffs = [cA4, cD4, cD3, cD2, cD1]
+    # cD4 = pywt.threshold(cD4, th, mode='less')
+    # cD3 = pywt.threshold(cD3, th, mode='less')
+    # cD2 = pywt.threshold(cD2, th, mode='less')
+    # cD1 = pywt.threshold(cD1, th, mode='less')
+
+    # coeffs = [cA4, cD4, cD3, cD2, cD1]
+
+    # for c in coeffs[1:]:
+    #     for i in range(len(c)):
+    #         c[i] = 0
 
     # reconstrucao do sinal
-    recSignal = pywt.waverec(coeffs, 'db6')
+    # coeffs[:-4] = butter_lowpass_filter(coeffs[:-4], th, fs)
+    recSignal = pywt.waverec(coeffs[:-4] + [None] * 4, 'db6')  # remocao de todos os coeficientes de detalhe
+    # coeffs[:-4] = np.zeros_like(coeffs[:-4])
+
+    # plota sinais para visualizacao
+    # plot_imagens(instance,'original')
+    # plot_imagens(recSignal, 'rec')
+
+    # y = butter_lowpass_filter(recSignal, th, fs)
+    # plot_imagens(y, 'y')
+
+
+    # recSignal = pywt.waverec(coeffs, 'db6')
+    # y = butter_lowpass_filter(recSignal, th, fs)
     return recSignal
+    # return y
 
 
 def butter_bandpass(lowcut, highcut, fs, order=5):
